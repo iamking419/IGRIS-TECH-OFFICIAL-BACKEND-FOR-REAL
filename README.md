@@ -118,23 +118,52 @@ The API will be available at:
 | `PATCH` | `/api/v1/contact/{id}` | Update inquiry status (`NEW`, `CONTACTED`, `IN_PROGRESS`, etc.) | Admin |
 | `DELETE` | `/api/v1/contact/{id}` | Delete inquiry | Admin |
 
+### 🔐 Authentication (`/api/v1/auth`)
+| Method | Endpoint | Description | Access |
+|---|---|---|---|
+| `POST` | `/api/v1/auth/login` | Admin login with password -> returns signed JWT token | Public |
+| `GET` | `/api/v1/auth/verify` | Verify if current JWT token or session is valid | Admin |
+
 ---
 
-## 🔒 Admin Authentication
+## 🔒 Admin Authentication & Login
 
-Protected admin operations require the configured `ADMIN_API_PASSWORD`.
+You can authenticate admin requests using **JWT access tokens** (recommended) or the master password:
 
-You can authenticate in either of two ways:
+### 1. Login with JWT Token (Recommended)
 
-1. **Bearer Token Header**:
-   ```http
-   Authorization: Bearer <ADMIN_API_PASSWORD>
-   ```
+Send a POST request with your `ADMIN_API_PASSWORD`:
+```bash
+curl -X POST http://127.0.0.1:8000/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"password": "your_admin_password"}'
+```
 
-2. **Custom Header**:
-   ```http
-   X-Admin-Password: <ADMIN_API_PASSWORD>
-   ```
+**Response:**
+```json
+{
+  "access_token": "eyJhbGciOiJIUzI1Ni...",
+  "token_type": "bearer",
+  "expires_in_minutes": 1440
+}
+```
 
-In Swagger UI (`/docs`), click the **Authorize** button at the top right and enter your `ADMIN_API_PASSWORD` to execute protected endpoints directly.
-# IGRIS-TECH-OFFICIAL-BACKEND-FOR-REAL
+Use the returned `access_token` in future requests:
+```http
+Authorization: Bearer <access_token>
+```
+
+### 2. Direct Password (For Quick Testing / cURL / Scripts)
+
+You can also send the master password directly:
+```http
+Authorization: Bearer <ADMIN_API_PASSWORD>
+```
+or:
+```http
+X-Admin-Password: <ADMIN_API_PASSWORD>
+```
+
+### 3. Interactive Swagger UI (`/docs`)
+Click the green **Authorize 🔓** button in Swagger UI. Enter your `ADMIN_API_PASSWORD` in the **password** field, and Swagger UI will automatically call `/api/v1/auth/login` to authenticate your session!
+

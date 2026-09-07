@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from database import Base, engine
-from routes import contact, ecosystem, projects, reviews
+from routes import auth, contact, ecosystem, projects, reviews
 
 load_dotenv()
 
@@ -70,6 +70,7 @@ def health_check():
 # Register Feature Routers (/api/v1/...)
 # -----------------------------------------------------------------------------
 
+app.include_router(auth.router)
 app.include_router(projects.router)
 app.include_router(ecosystem.router)
 app.include_router(reviews.router)

@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from database import get_db
-from auth import require_admin
+from auth import get_current_admin
 import models
 import schemas
 
@@ -54,7 +54,7 @@ def submit_review(review_in: schemas.ReviewCreate, db: Session = Depends(get_db)
 @router.get(
     "/admin",
     response_model=List[schemas.ReviewAdminResponse],
-    dependencies=[Depends(require_admin)],
+    dependencies=[Depends(get_current_admin)],
 )
 def list_all_reviews_admin(
     status_filter: Optional[schemas.ReviewStatusType] = Query(
@@ -72,7 +72,7 @@ def list_all_reviews_admin(
 @router.patch(
     "/{review_id}",
     response_model=schemas.ReviewAdminResponse,
-    dependencies=[Depends(require_admin)],
+    dependencies=[Depends(get_current_admin)],
 )
 def update_review(
     review_id: int,
@@ -108,7 +108,7 @@ def update_review(
 @router.delete(
     "/{review_id}",
     status_code=status.HTTP_204_NO_CONTENT,
-    dependencies=[Depends(require_admin)],
+    dependencies=[Depends(get_current_admin)],
 )
 def delete_review(review_id: int, db: Session = Depends(get_db)):
     """Delete a review submission (Admin protected)."""

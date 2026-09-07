@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from database import get_db
-from auth import require_admin
+from auth import get_current_admin
 import models
 import schemas
 
@@ -53,7 +53,7 @@ def get_published_project_by_slug(slug: str, db: Session = Depends(get_db)):
     "",
     response_model=schemas.ProjectAdminResponse,
     status_code=status.HTTP_201_CREATED,
-    dependencies=[Depends(require_admin)],
+    dependencies=[Depends(get_current_admin)],
 )
 def create_project(project_in: schemas.ProjectCreate, db: Session = Depends(get_db)):
     """Create a new project (Admin protected)."""
@@ -78,7 +78,7 @@ def create_project(project_in: schemas.ProjectCreate, db: Session = Depends(get_
 @router.patch(
     "/{project_id}",
     response_model=schemas.ProjectAdminResponse,
-    dependencies=[Depends(require_admin)],
+    dependencies=[Depends(get_current_admin)],
 )
 def update_project(
     project_id: int,
@@ -127,7 +127,7 @@ def update_project(
 @router.delete(
     "/{project_id}",
     status_code=status.HTTP_204_NO_CONTENT,
-    dependencies=[Depends(require_admin)],
+    dependencies=[Depends(get_current_admin)],
 )
 def delete_project(project_id: int, db: Session = Depends(get_db)):
     """Delete a project (Admin protected)."""

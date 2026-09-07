@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from database import get_db
-from auth import require_admin
+from auth import get_current_admin
 import models
 import schemas
 
@@ -46,7 +46,7 @@ def submit_contact_inquiry(
 @router.get(
     "",
     response_model=List[schemas.ContactSubmissionResponse],
-    dependencies=[Depends(require_admin)],
+    dependencies=[Depends(get_current_admin)],
 )
 def list_contact_inquiries(
     status_filter: Optional[schemas.ContactStatusType] = Query(
@@ -64,7 +64,7 @@ def list_contact_inquiries(
 @router.get(
     "/{submission_id}",
     response_model=schemas.ContactSubmissionResponse,
-    dependencies=[Depends(require_admin)],
+    dependencies=[Depends(get_current_admin)],
 )
 def get_contact_inquiry(submission_id: int, db: Session = Depends(get_db)):
     """Retrieve a single contact inquiry by ID (Admin protected)."""
@@ -84,7 +84,7 @@ def get_contact_inquiry(submission_id: int, db: Session = Depends(get_db)):
 @router.patch(
     "/{submission_id}",
     response_model=schemas.ContactSubmissionResponse,
-    dependencies=[Depends(require_admin)],
+    dependencies=[Depends(get_current_admin)],
 )
 def update_contact_inquiry_status(
     submission_id: int,
@@ -114,7 +114,7 @@ def update_contact_inquiry_status(
 @router.delete(
     "/{submission_id}",
     status_code=status.HTTP_204_NO_CONTENT,
-    dependencies=[Depends(require_admin)],
+    dependencies=[Depends(get_current_admin)],
 )
 def delete_contact_inquiry(submission_id: int, db: Session = Depends(get_db)):
     """Delete a contact inquiry (Admin protected)."""

@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from database import get_db
-from auth import require_admin
+from auth import get_current_admin
 import models
 import schemas
 
@@ -53,7 +53,7 @@ def get_ecosystem_product_by_slug(slug: str, db: Session = Depends(get_db)):
     "",
     response_model=schemas.EcosystemResponse,
     status_code=status.HTTP_201_CREATED,
-    dependencies=[Depends(require_admin)],
+    dependencies=[Depends(get_current_admin)],
 )
 def create_ecosystem_product(
     product_in: schemas.EcosystemCreate, db: Session = Depends(get_db)
@@ -80,7 +80,7 @@ def create_ecosystem_product(
 @router.patch(
     "/{product_id}",
     response_model=schemas.EcosystemResponse,
-    dependencies=[Depends(require_admin)],
+    dependencies=[Depends(get_current_admin)],
 )
 def update_ecosystem_product(
     product_id: int,
@@ -119,7 +119,7 @@ def update_ecosystem_product(
 @router.delete(
     "/{product_id}",
     status_code=status.HTTP_204_NO_CONTENT,
-    dependencies=[Depends(require_admin)],
+    dependencies=[Depends(get_current_admin)],
 )
 def delete_ecosystem_product(product_id: int, db: Session = Depends(get_db)):
     """Delete an ecosystem product (Admin protected)."""

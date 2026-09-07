@@ -190,3 +190,22 @@ class ContactSubmissionResponse(BaseModel):
 
 class ContactSubmissionUpdate(BaseModel):
     status: Optional[ContactStatusType] = None
+
+
+# -----------------------------------------------------------------------------
+# Authentication Schemas
+# -----------------------------------------------------------------------------
+
+class AdminLoginRequest(BaseModel):
+    password: str = Field(
+        ...,
+        description="Admin API password",
+        json_schema_extra={"example": "iamking"},
+    )
+
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    expires_in_minutes: int
+
